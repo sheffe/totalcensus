@@ -536,6 +536,7 @@ read_acs1year_geo_ <- function(year,
     # read all columns and then select as the file is not as big as those in
     # decennial census.
     geo <- fread(file, header = FALSE, encoding = "Latin-1" ,
+                 na.strings = c("NA", "", "."),
                  showProgress = show_progress, colClasses = "character") %>%
         setnames(dict_acs_geoheader$reference) %>%
         .[, c(c("GEOID", "NAME", "LOGRECNO", "SUMLEV", "GEOCOMP"), geo_headers), with = FALSE] %>%
@@ -564,7 +565,9 @@ read_acs1year_1_file_tablecontents_ <- function(year, state, file_seg, table_con
     file <- paste0(path_to_census, "/acs1year/", year, "/", est_marg, year, "1",
                    tolower(state), file_seg, "000.txt")
 
-    dt <- fread(file, header = FALSE, showProgress = show_progress) %>%
+    dt <- fread(file, header = FALSE,
+                na.strings = c("NA", "", "."),
+                showProgress = show_progress) %>%
         setnames(names(.), col_names) %>%
         .[, c("LOGRECNO", table_contents), with = FALSE] %>%
         # add "_e" or "_m" to show the data is estimate or margin

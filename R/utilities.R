@@ -9,7 +9,8 @@ get_name_from_census2010 <- function(FIPs, geo_header, in_states){
     for (st in in_states){
         file <- paste0(path_to_census, "/generated_data/fips_", geoheader, "/",
                        geoheader, "_fips_", st, ".csv")
-        lst[[st]] <- fread(file, colClasses = "character")
+        lst[[st]] <- fread(file, colClasses = "character",
+                           na.strings = c("NA", "", "."))
     }
     fips_geoheader <- rbindlist(lst) %>%
         .[, .(fips = get(geo_header), state, NAME)]
@@ -387,7 +388,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/blkgrp_geoid_place/blkgrp_geoid_place_",
                                state, ".csv")
-                blkgrp <- fread(file, colClasses = "character") %>%
+                blkgrp <- fread(file, colClasses = "character",
+                                na.strings = c("NA", "", ".")) %>%
                     .[, .(GEOID, PLACE_tmp = PLACE)]
                 dt <- blkgrp[dt, on = .(GEOID), allow.cartesian=TRUE] %>%
                     .[SUMLEV == "150", PLACE := PLACE_tmp] %>%
@@ -398,7 +400,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/blkgrp_geoid_cousub/blkgrp_geoid_cousub_",
                                state, ".csv")
-                blkgrp <- fread(file, colClasses = "character") %>%
+                blkgrp <- fread(file, colClasses = "character",
+                                na.strings = c("NA", "", ".")) %>%
                     .[, .(GEOID, COUSUB_tmp = COUSUB)]
                 dt <- blkgrp[dt, on = "GEOID", allow.cartesian=TRUE] %>%
                     .[SUMLEV == "150", COUSUB := COUSUB_tmp] %>%
@@ -410,7 +413,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/tract_geoid_place/tract_geoid_place_",
                                state, ".csv")
-                tract <- fread(file, colClasses = "character") %>%
+                tract <- fread(file, colClasses = "character",
+                               na.strings = c("NA", "", ".")) %>%
                     .[, .(GEOID, PLACE_tmp = PLACE)]
                 dt <- tract[dt, on = .(GEOID), allow.cartesian=TRUE] %>%
                     .[SUMLEV == "140", PLACE := PLACE_tmp] %>%
@@ -421,7 +425,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/tract_geoid_cousub/tract_geoid_cousub_",
                                state, ".csv")
-                tract <- fread(file, colClasses = "character") %>%
+                tract <- fread(file, colClasses = "character",
+                               na.strings = c("NA", "", ".")) %>%
                     .[, .(GEOID, COUSUB_tmp = COUSUB)]
                 dt <- tract[dt, on = .(GEOID), allow.cartesian=TRUE] %>%
                     .[SUMLEV == "140", COUSUB := COUSUB_tmp] %>%
@@ -437,7 +442,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/blkgrp_geoid_place/blkgrp_geoid_place_",
                                state, ".csv")
-                blkgrp <- fread(file, colClasses = "character") %>%
+                blkgrp <- fread(file, colClasses = "character",
+                                na.strings = c("NA", "", ".")) %>%
                     .[, .(LOGRECNO, PLACE_tmp = PLACE)] %>%
                     .[, LOGRECNO := as.numeric(LOGRECNO)]
                 dt <- blkgrp[dt, on = .(LOGRECNO), allow.cartesian=TRUE] %>%
@@ -449,7 +455,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/blkgrp_geoid_cousub/blkgrp_geoid_cousub_",
                                state, ".csv")
-                blkgrp <- fread(file, colClasses = "character") %>%
+                blkgrp <- fread(file, colClasses = "character",
+                                na.strings = c("NA", "", ".")) %>%
                     .[, .(LOGRECNO, COUSUB_tmp = COUSUB)] %>%
                     .[, LOGRECNO := as.numeric(LOGRECNO)]
                 dt <- blkgrp[dt, on = .(LOGRECNO), allow.cartesian=TRUE] %>%
@@ -463,7 +470,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/tract_geoid_place/tract_geoid_place_",
                                state, ".csv")
-                tract <- fread(file, colClasses = "character") %>%
+                tract <- fread(file, colClasses = "character",
+                               na.strings = c("NA", "", ".")) %>%
                     .[, .(LOGRECNO, PLACE_tmp = PLACE)] %>%
                     .[, LOGRECNO := as.numeric(LOGRECNO)]
                 dt <- tract[dt, on = .(LOGRECNO), allow.cartesian=TRUE] %>%
@@ -475,7 +483,8 @@ add_geoheader <- function(dt, state, geo_headers, summary_level, survey = "acs")
                 file <- paste0(path_to_census,
                                "/generated_data/tract_geoid_cousub/tract_geoid_cousub_",
                                state, ".csv")
-                tract <- fread(file, colClasses = "character") %>%
+                tract <- fread(file, colClasses = "character",
+                               a.strings = c("NA", "", ".")) %>%
                     .[, .(LOGRECNO, COUSUB_tmp = COUSUB)] %>%
                     .[, LOGRECNO := as.numeric(LOGRECNO)]
                 dt <- tract[dt, on = .(LOGRECNO), allow.cartesian=TRUE] %>%
@@ -506,6 +515,7 @@ add_coord <- function(dt, state, geo_headers){
                    state, ".csv")
     coord <- fread(file,
                    select = c("GEOID", "lon", "lat", geo_headers),
+                   na.strings = c("NA", "", "."),
                    colClasses = "character") %>%
         .[, lon := as.numeric(lon)] %>%
         .[, lat := as.numeric(lat)]

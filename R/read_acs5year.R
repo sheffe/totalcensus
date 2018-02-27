@@ -547,6 +547,7 @@ read_acs5year_geo_ <- function(year,
     # read all columns and then select as the file is not as big as those in
     # decennial census.
     geo <- fread(file, header = FALSE, encoding = "Latin-1" ,
+                 na.strings = c("NA", "", "."),
                  showProgress = show_progress, colClasses = "character") %>%
         setnames(dict_acs_geoheader$reference) %>%
         .[, c(c("GEOID", "NAME", "LOGRECNO", "SUMLEV", "GEOCOMP"), geo_headers), with = FALSE] %>%
@@ -597,7 +598,9 @@ read_acs5year_1_file_tablecontents_ <- function(year, state, file_seg,
     file2 <- paste0(path_to_census, "/acs5year/", year, "/", "group2/",
                     est_marg, year, "5", tolower(state), file_seg, "000.txt")
 
-    dt1 <- fread(file1, header = FALSE, showProgress = show_progress) %>%
+    dt1 <- fread(file1, header = FALSE,
+                 na.strings = c("NA", "", "."),
+                 showProgress = show_progress) %>%
         setnames(names(.), col_names)
 
     if(toupper(state) == "US"){
@@ -605,7 +608,9 @@ read_acs5year_1_file_tablecontents_ <- function(year, state, file_seg,
         # group level, which causes fread error
         dt2 = NULL
     } else {
-        dt2 <- fread(file2, header = FALSE, showProgress = show_progress) %>%
+        dt2 <- fread(file2, header = FALSE,
+                     na.strings = c("NA", "", "."),
+                     showProgress = show_progress) %>%
             setnames(names(.), col_names)
     }
 

@@ -488,7 +488,9 @@ read_decennial_geo_ <- function(year,
     file <- paste0(path_to_census, "/census", year, "/", state, "/", tolower(state),
                    "geo", year, ".ur1")
     # use "Latin-1" for encoding special spanish latters such as ñ in Cañada
-    geo <- fread(file, header = FALSE, sep = "\n", encoding = "Latin-1" ,
+    geo <- fread(file, header = FALSE, sep = "\n",
+                 na.strings = c("NA", "", "."),
+                 encoding = "Latin-1",
                  showProgress = show_progress)
 
     # always keep the following geoheaders in the output data
@@ -575,7 +577,10 @@ read_decennial_1_file_tablecontents_ <- function(year,
     }
 
     # fread assigns column names as "V1", "V2", ... when header = FALSE
-    dt <- fread(file, header = FALSE, select = c("V5", cols), showProgress = show_progress) %>%
+    dt <- fread(file, header = FALSE,
+                na.strings = c("NA", "", "."),
+                select = c("V5", cols),
+                showProgress = show_progress) %>%
         setnames(names(.), c("LOGRECNO", table_contents)) %>%
         setkey(LOGRECNO)
 
